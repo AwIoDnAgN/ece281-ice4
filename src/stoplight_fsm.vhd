@@ -78,32 +78,13 @@ architecture stoplight_fsm_arch of stoplight_fsm is
 begin
 	-- CONCURRENT STATEMENTS ----------------------------
 	-- Next state logic
-	process(f_Q, i_C)
-	begin
-        case f_Q is
-           when "00" => 
-               if i_C = '1' then
-                   f_Q_next <= "01";
-               else
-                   f_Q_next <= "00";
-               end if;
-            when "01" =>
-                if i_C = '1' then
-                   f_Q_next <= "01";
-               else
-                   f_Q_next <= "10";
-               end if;
-            when "10" =>
-               f_Q_next <= "00";
-            when others =>
-               f_Q_next <= "00";
-        end case;
-    end process;
+	f_Q_next(0) <= not(f_Q(1)) and i_C;
+	f_Q_next(1) <= not(f_Q(1)) and f_Q(0) and not(i_C);
 	
 	-- Output logic
-	o_G <= '1' when f_Q = "01" else '0';
-	o_Y <= '1' when f_Q = "10" else '0';
-	o_R <= '1' when f_Q = "00" else '0';
+	o_G <= not(f_Q(1)) and f_Q(0);
+	o_Y <= f_Q(1) and not(f_Q(0));
+	o_R <= (not(f_Q(1)) and not(f_Q(0))) or (f_Q(1) and f_Q(0));
 	-------------------------------------------------------	
 	
 	-- PROCESSES ----------------------------------------	

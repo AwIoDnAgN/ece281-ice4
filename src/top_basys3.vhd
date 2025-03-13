@@ -62,6 +62,7 @@ entity top_basys3 is
         clk     :   in std_logic;
         sw  	:   in  std_logic_vector(0 downto 0);
 		JA 		:   out std_logic_vector(2 downto 0);
+		led     :   out std_logic_vector(2 downto 0);
 		btnC 	:   in  std_logic;
 		btnL	: 	in  std_logic
 	);
@@ -70,7 +71,14 @@ end top_basys3;
 architecture top_basys3_arch of top_basys3 is 
 
 --Declare stoplight component here 
-
+component stoplight_fsm is
+    Port ( i_C      : in STD_LOGIC;
+           i_reset  : in STD_LOGIC;
+           i_clk    : in STD_LOGIC;
+           o_R      : out STD_LOGIC;
+           o_Y      : out STD_LOGIC;
+           o_G      : out STD_LOGIC);
+end component stoplight_fsm;
 
 component clock_divider is
 	generic ( constant k_DIV : natural := 2	);
