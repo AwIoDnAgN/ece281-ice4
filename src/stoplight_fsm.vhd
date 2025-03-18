@@ -58,7 +58,7 @@
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
-
+ 
   
 entity stoplight_fsm is
     Port ( i_C     : in  STD_LOGIC;
@@ -68,28 +68,30 @@ entity stoplight_fsm is
            o_Y     : out  STD_LOGIC;
            o_G     : out  STD_LOGIC);
 end stoplight_fsm;
-
+ 
 architecture stoplight_fsm_arch of stoplight_fsm is 
-	
 	-- create register signals with default state yellow (10)
-  
+    signal f_Q      : std_logic_vector(1 downto 0) := "10";
+    signal f_Q_next : std_logic_vector(1 downto 0);
 begin
 	-- CONCURRENT STATEMENTS ----------------------------
 	-- Next state logic
-	
-	
+    f_Q_next(0) <= not(f_Q(1)) and i_C;
+    f_Q_next(1) <= not(f_Q(1)) and f_Q(0) and not(i_C);
 	-- Output logic
-	
+    o_G <= not(f_Q(1)) and f_Q(0);
+    o_Y <= f_Q(1) and not(f_Q(0));
+    o_R <= (not(f_Q(1)) and not(f_Q(0))) or (f_Q(1) and f_Q(0));
 	-------------------------------------------------------	
-	
 	-- PROCESSES ----------------------------------------	
 	-- state memory w/ asynchronous reset ---------------
-	register_proc : process (  )
+	register_proc : process (i_clk, i_reset)
 	begin
-			--Reset state is yellow
-
-
+	   if i_reset = '1' then
+	       f_Q <= "10"; --Reset state is yellow
+	   elsif rising_edge(i_clk) then
+	       f_Q <= f_Q_next; -- next state becomes current state
+	   end if;
 	end process register_proc;
 	-------------------------------------------------------
-	
 end stoplight_fsm_arch;
